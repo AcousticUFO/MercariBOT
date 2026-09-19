@@ -29,7 +29,10 @@ class MercariItem:
 
             thumbnails = data.get("thumbnails", [])
             image_url = thumbnails[0] if thumbnails and isinstance(thumbnails[0], str) else ""
-            product_url = f"https://jp.mercari.com/item/{item_id}"
+            if item_id.startswith("m") and item_id[1:].isdigit():
+                product_url = f"https://jp.mercari.com/item/{item_id}"
+            else:
+                product_url = f"https://jp.mercari.com/shops/product/{item_id}"
             status = str(data.get("status", "ITEM_STATUS_ON_SALE"))
 
             if not item_id:

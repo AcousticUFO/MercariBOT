@@ -15,6 +15,10 @@ ALLOWED_IMAGE_DOMAINS = (
     "static.mercdn.net",
     "jp.mercari.com",
     "mercdn.net",
+    "mercari-shops-static.com",
+    "assets.mercari-shops-static.com",
+    "mercari.com",
+    "mercari.jp",
 )
 
 

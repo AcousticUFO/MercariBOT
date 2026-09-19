@@ -72,7 +72,7 @@ class TelegramNotifier:
         """Send a photo with caption to Telegram after SSRF verification."""
         if not is_safe_image_url(photo_url):
             logger.warning(
-                f"Suspicious or disallowed image URL rejected (anti-SSRF): {photo_url[:60]}"
+                f"Suspicious or disallowed image URL rejected (anti-SSRF): {photo_url}"
             )
             return False
 
@@ -84,7 +84,28 @@ class TelegramNotifier:
         if parse_mode:
             payload["parse_mode"] = parse_mode
 
-        return await self._execute_request("sendPhoto", payload)
+        success = await self._execute_request("sendPhoto", payload)
+        if success:
+            return True
+
+        # Fallback: Download image and upload directly as multipart (handles @webp or CDN restrictions)
+        try:
+            img_res = await self._client.get(photo_url, timeout=10.0)
+            if img_res.status_code == 200:
+                content_type = img_res.headers.get("content-type", "image/jpeg")
+                files = {"photo": ("photo.jpg", img_res.content, content_type)}
+                data = {"chat_id": str(self.chat_id), "caption": caption}
+                if parse_mode:
+                    data["parse_mode"] = parse_mode
+                api_url = f"https://api.telegram.org/bot{self.token}/sendPhoto"
+                upload_res = await self._client.post(api_url, data=data, files=files)
+                if upload_res.status_code == 200:
+                    await asyncio.sleep(self.throttle_seconds)
+                    return True
+        except (httpx.HTTPError, OSError) as e:
+            logger.debug(f"Direct photo upload fallback failed: {e}")
+
+        return False
 
     async def _execute_request(self, endpoint: str, payload: dict) -> bool:
         """Execute request with rate limiting and retry on 429."""
@@ -136,19 +157,23 @@ class TelegramNotifier:
         safe_keyword = html.escape(item.keyword)
         safe_url = html.escape(item.product_url)
 
-        msg = (
-            self.template.replace("{name}", safe_name)
-            .replace("{price_jpy}", str(item.price))
-            .replace("{price_converted}", f"{converted_price:.2f}")
-            .replace("{currency_symbol}", currency_symbol)
-            .replace("{keyword}", safe_keyword)
-            .replace("{url}", safe_url)
-            .replace("$productName", safe_name)
-            .replace("$price", str(item.price))
-            .replace("$productURL", safe_url)
-            .replace("$id", item.id)
-            .replace("$priceCurrency", f"{converted_price:.2f} {currency_symbol}")
-        )
+        # Order matters: replace longer / specific tokens first ($priceCurrency before $price)
+        replacements = [
+            ("{name}", safe_name),
+            ("{price_jpy}", str(item.price)),
+            ("{price_converted}", f"{converted_price:.2f}"),
+            ("{currency_symbol}", currency_symbol),
+            ("{keyword}", safe_keyword),
+            ("{url}", safe_url),
+            ("$productName", safe_name),
+            ("$productURL", safe_url),
+            ("$priceCurrency", f"{converted_price:.2f} {currency_symbol}"),
+            ("$price", str(item.price)),
+            ("$id", item.id),
+        ]
+        msg = self.template
+        for old, new in replacements:
+            msg = msg.replace(old, new)
 
         if "*" in msg and "<b>" not in msg:
             msg = re.sub(r"\*(.*?)\*", r"<b>\1</b>", msg)

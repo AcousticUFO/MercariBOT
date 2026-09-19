@@ -32,6 +32,7 @@ def test_secret_masking_filter():
 def test_ssrf_image_url_protection():
     assert is_safe_image_url("https://static.mercdn.net/item/detail/orig/photos/m123456_1.jpg")
     assert is_safe_image_url("https://jp.mercari.com/assets/img/logo.png")
+    assert is_safe_image_url("https://assets.mercari-shops-static.com/-/small/plain/sKsYHw.jpg@webp")
 
     # SSRF / non-HTTPS / dangerous attempts
     assert not is_safe_image_url("http://static.mercdn.net/item.jpg")
