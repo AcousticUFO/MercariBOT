@@ -1,9 +1,9 @@
-# Secrets et configurations locales
+# Secrets and local configuration
 .env
 *.env
 !.env.example
 
-# Base de données et cache
+# Database and cache
 *.db
 *.db-journal
 *.db-wal
@@ -16,7 +16,7 @@ scraped.txt
 bot.log
 bot_err.log
 
-# Environnements virtuels
+# Virtual environments
 .venv/
 venv/
 ENV/
@@ -34,7 +34,7 @@ dist/
 build/
 *.egg-info/
 
-# IDEs et OS
+# IDEs and OS metadata
 .vscode/
 .idea/
 .DS_Store

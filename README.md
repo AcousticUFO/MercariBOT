@@ -102,7 +102,7 @@ auto_currency = true
 target_currency = "EUR"
 changerate = 0.0055
 
-# Define your searches
+# Monitored searches
 [[searches]]
 keywords = "vintage jacket"
 exclude_keywords = "damaged broken"
@@ -195,7 +195,7 @@ This project adheres to OWASP secure coding practices and DevSecOps principles:
 - **OWASP A03 (Injection)**: Uses 100% parameterized SQLite statements (`?`) to prevent SQL injection. All user-generated seller listings are sanitized using deterministic HTML entity escaping before rendering in Telegram messages.
 - **OWASP A05 (Security Misconfiguration)**: The Docker container executes under a dedicated, unprivileged non-root user (`mercaribot`, UID 10001). Sensitive files are excluded via comprehensive `.gitignore` rules.
 - **OWASP A09 (Security Logging)**: Integrated `SecretMaskingFilter` intercepts all log records in real time and automatically redacts Telegram bot tokens and API credentials to prevent sensitive data leaks.
-- **OWASP A10 (Server-Side Request Forgery)**: Image URLs from API payloads are validated against a strict domain whitelist (`static.mercdn.net`) and reject private IP addresses, loopback addresses, and cloud metadata endpoints.
+- **OWASP A10 (Server-Side Request Forgery)**: Image URLs from API payloads are validated against a strict domain whitelist (`*.mercdn.net`, `*.mercari-shops-static.com`) and reject private IP addresses, loopback addresses, and cloud metadata endpoints.
 - **DevSecOps Pipeline**: Automated GitHub Actions CI pipeline running Bandit (SAST), Pip-Audit (SCA), Ruff (linter), and Pytest.
 
 ---
