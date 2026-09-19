@@ -1,0 +1,48 @@
+# MercariBOT Configuration File
+
+# Delay between two complete scan loops (in seconds, e.g. 60 = 1 minute)
+delay = 60
+
+# Courteous delay between individual Mercari queries (in seconds, recommended: 1.5 to 2.0)
+request_delay = 1.5
+
+# Maximum concurrent requests to Mercari Japan API (anti-ban rate limiter)
+max_concurrent_requests = 2
+
+# Download and attach photo with Telegram alert
+downloadphotos = true
+
+# Live Currency Conversion
+# When auto_currency = true, fetches live daily rates from the European Central Bank (Frankfurter API)
+auto_currency = true
+target_currency = "EUR"
+
+# Fallback exchange rate (used if offline or when auto_currency = false)
+# E.g. 0.0055 means 1 JPY = 0.0055 EUR
+changerate = 0.0055
+
+# Optional Telegram Message Template.
+# Available placeholders:
+# {name}            - Product title
+# {price_jpy}       - Price in Yen (e.g. 2500)
+# {price_converted} - Converted price (e.g. 13.75)
+# {currency_symbol} - Currency symbol (€ or $)
+# {keyword}         - Matching search keyword
+# {url}             - Direct URL to the listing
+message = """
+⭕️ <b>{name}</b>
+💰 {price_jpy}¥ (~{price_converted}{currency_symbol})
+🔍 Keyword: <code>{keyword}</code>
+🔗 <a href="{url}">View listing on Mercari</a>
+"""
+
+# List of searches to monitor
+[[searches]]
+keywords = "vintage jacket"
+# exclude_keywords = "broken damage"
+
+[[searches]]
+keywords = "playstation 5"
+
+[[searches]]
+keywords = "pokemon card"

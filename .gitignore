@@ -1,0 +1,42 @@
+# Secrets et configurations locales
+.env
+*.env
+!.env.example
+
+# Base de données et cache
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+scraped_cache.json
+scraped.txt
+
+# Logs
+*.log
+bot.log
+bot_err.log
+
+# Environnements virtuels
+.venv/
+venv/
+ENV/
+env/
+
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# IDEs et OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.ruff_cache/
